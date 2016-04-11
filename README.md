@@ -1,4 +1,4 @@
-# Hangman-C-
+# Hangman C++
 Hangman written in C++.
 
 - Year: 2016
