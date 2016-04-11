@@ -72,6 +72,7 @@ class HangmanGame {
             }
         }
 
+        
         /* Prints out important info for the player. */
         void PrintInfo() {
             cout << "\n";
@@ -80,6 +81,7 @@ class HangmanGame {
             cout << "Wrong: " << wrong;
         }
 
+        
         /* Prompts the user for a new guess. */
         void GuessAgain() {
             cout << "\n";
@@ -99,6 +101,7 @@ class HangmanGame {
             }
             return times;
         }
+        
         
         /* Checks if the guess is a letter. */
         bool IsLetter(char guess) {
@@ -132,62 +135,151 @@ class HangmanGame {
             return false;
         }
         
+        
+        /* Changes the user's word based on what has been guessed. */
+        void replaceWord(char guess) {
+            string temp = "";
+            int i = 0;
+            for(char c : MYSTERY_WORD) {
+                if(guess == c) {
+                    temp += guess;
+                    i++;
+                } else if(usersWord[i] == c) {
+                    temp += usersWord[i];
+                    i++;
+                } else {
+                    temp += "_";
+                    i++;
+                }
+            }
+            usersWord = temp;
+        }
+        
+        
+        /* Draw hangman */
+        void DrawHangman() {
+            if (wrong == 1) {
+                    cout << " (o o) ";
+            } else if (wrong == 2) {
+                    cout << " (o o) ";
+                    cout << "   |   ";
+            } else if (wrong == 3) {
+                    cout << " (o o) ";
+                    cout << "  -|   ";
+            } else if (wrong == 4) {
+                    cout << " (o o) ";
+                    cout << " --|   ";
+            } else if (wrong == 5) {
+                    cout << " (o o) ";
+                    cout << " --|-  ";
+            } else if (wrong == 6) {
+                    cout << " (o o) ";
+                    cout << " --|-- ";
+            } else if (wrong == 7) {
+                    cout << " (o o) ";
+                    cout << " --|-- ";
+                    cout << "  |    ";
+            } else if (wrong == 8) {
+                    cout << " (o o) ";
+                    cout << " --|-- ";
+                    cout << "  |    ";
+                    cout << "  |    ";
+            } else if (wrong == 9) {
+                    cout << " (o o) ";
+                    cout << " --|-- ";
+                    cout << "  | |  ";
+                    cout << "  |    ";
+            } else if (wrong == 10) {
+                    cout << " (o o) ";
+                    cout << " --|-- ";
+                    cout << "  | |  ";
+                    cout << "  | |  ";
+            }
+        }
+        
         /* Handles the guessing for the game. */
         void GuessLetter(char guess) {
                 
             //If it is a letter
             if(IsLetter(guess)) {
+                
+                //If you haven't guessed the letter yet
+                if(find(guessedLetters.begin(),guessedLetters.end(),guess) == guessedLetters.end()) {
+                    
+                    size_t found = MYSTERY_WORD.find(guess);
 
-                size_t found = MYSTERY_WORD.find(guess);
+                    //If it's a correct guess
+                    if(found != string::npos) {
+                        //Give correct message
+                        cout << "\n";
+                        cout << "Correct!";
+                        cout << "\n";
 
-                //If it's a correct guess
-                if(found != string::npos) {
-                    //Give correct message
-                    cout << "\n";
-                    cout << "Correct!";
-                    cout << "\n";
+                        //Print out the hangman
+                        cout << "\n";
+                        DrawHangman();
+                        cout << "\n";
+                        
+                        //Change user's word
+                        replaceWord(guess);
 
-                    //Change user's word
+                        //Add to the number right
+                        right += GetOccurances(guess);
 
+                        //Add to the list of guessed letters
+                        guessedLetters += guess;
 
-                    //Add to the number right
-                    right += GetOccurances(guess);
+                        //Check for next move
+                        if(right < maxRight) {
+                            PrintUnderscores();
+                            PrintInfo();
+                            GuessAgain();
+                        } else {
+                            cout << "\n";
+                            cout << "You guessed the word correctly! Word: " << MYSTERY_WORD;
+                            cout << "\n";
+                        }
 
-                    //Check for next move
-                    if(right < maxRight) {
-                        PrintUnderscores();
-                        PrintInfo();
-                        GuessAgain();
+                    //A wrong guess
                     } else {
-                        cout << "\n";
-                        cout << "You guessed the word correctly! Word: " << MYSTERY_WORD;
-                        cout << "\n";
-                    }
 
-                //A wrong guess
+                        //Give incorrect message
+                        cout << "\n";
+                        cout << "Incorrect!";
+                        cout << "\n";
+
+                        //Print out the hangman
+                        cout << "\n";
+                        DrawHangman();
+                        cout << "\n";
+                        
+                        //Add to the number wrong
+                        wrong++;
+                        
+                        //Add to the list of guessed letters
+                        guessedLetters += guess;
+
+                        //Check for next move
+                        if(wrong < maxWrong) {
+                            PrintUnderscores();
+                            PrintInfo();
+                            GuessAgain();
+                        } else {
+                            cout << "\n";
+                            cout << "Sorry, you ran out of tries... The word was " << MYSTERY_WORD;
+                            cout << "\n";
+                        }
+                    }
+                  
+                //You have already guessed the letter
                 } else {
-
-                    //Give incorrect message
                     cout << "\n";
-                    cout << "Incorrect!";
+                    cout << "You have already guessed that.";
                     cout << "\n";
-
-                    //Change user's word
-
-
-                    //Add to the number wrong
-                    wrong++;
-
-                    //Check for next move
-                    if(wrong < maxWrong) {
-                        PrintUnderscores();
-                        PrintInfo();
-                        GuessAgain();
-                    } else {
-                        cout << "\n";
-                        cout << "Sorry, you ran out of tries... The word was " << MYSTERY_WORD;
-                        cout << "\n";
-                    }
+                    
+                    PrintUnderscores();
+                    PrintInfo();
+                    GuessAgain();
                 }
 
             //If the guess is not a letter
